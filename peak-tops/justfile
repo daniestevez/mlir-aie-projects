@@ -30,7 +30,7 @@ trace: (xclbin trace-size trace-compute-tiles trace-compute-per-column trace-ite
 
 # show compute tile assembly
 show-asm: xclbin
-    ${PEANO_INSTALL_DIR}/bin/llvm-objdump -C -d peak_tops.mlir.prj/main_core_0_2.elf
+    ${PEANO_INSTALL_DIR}/bin/llvm-objdump -C -z -d peak_tops.mlir.prj/main_core_0_2.elf
 
 # build C++ kernel
 kernel: _build_dir
