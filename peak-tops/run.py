@@ -32,14 +32,14 @@ def main(args):
         )
         DefaultNPURuntime.process_trace(trace_buffer, ctrl_buffer, trace_config)
     npu_time = res.npu_time * 1e-9
-    # obtained from "just trace"; includes kernel call overhead
-    cycles_per_iteration = 537
+    # Obtained from the trace profile and study of the asm by hand
+    cycles_per_iteration = 539
     num_matrices_per_iteration = 2 * 16384 / (8 * 8)
     macs_per_iteration = num_matrices_per_iteration * 8 * 8 * 8
     ops = args.compute_tiles * 2 * macs_per_iteration * args.iterations / npu_time
     compute_clock = args.iterations * cycles_per_iteration / npu_time
     print(f"elapsed time: {npu_time:.3f} seconds")
-    print(f"compute core clock rate (approximation): {compute_clock * 1e-9:.3f} GHz")
+    print(f"compute core clock rate: {compute_clock * 1e-9:.3f} GHz")
     print(f"TOPS: {ops * 1e-12:.3f}")
 
 
