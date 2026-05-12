@@ -6,8 +6,11 @@
 # Copyright 2026 Daniel Estevez <daniel@destevez.net>
 # SPDX-License-Identifier: MIT OR Apache-2.0
 
+import argparse
+
 import aie.utils.test as test_utils
 import aie.iron as iron
+from aie.utils.hostruntime.argparse import add_runtime_args
 from aie.utils import DefaultNPURuntime
 from aie.utils.trace import TraceConfig
 from aie.utils.npukernel import NPUKernel
@@ -44,12 +47,13 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = test_utils.create_default_argparser()
+    parser = argparse.ArgumentParser()
+    add_runtime_args(parser)
     parser.add_argument(
         "--compute-tiles", default=32, type=int, help="Number of compute tiles"
     )
     parser.add_argument(
-        "--iterations", default=2**23, type=int, help="Number of iterations"
+        "--iterations", default=2**22, type=int, help="Number of iterations"
     )
     args = parser.parse_args()
     main(args)

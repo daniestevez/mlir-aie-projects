@@ -118,7 +118,7 @@ def parse_args():
         help="Number of compute tiles to use per column",
     )
     parser.add_argument(
-        "--iterations", default=2**23, type=int, help="Number of iterations"
+        "--iterations", default=2**22, type=int, help="Number of iterations"
     )
     return parser.parse_args()
 

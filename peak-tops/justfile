@@ -1,13 +1,13 @@
-mlir-aie-dir := shell("python3 -c 'from aie.utils.config import root_path; print(root_path())'")
-warning-flags := "-Wno-parentheses -Wno-attributes -Wno-macro-redefined -Wno-empty-body -Wno-missing-template-arg-list-after-template-kw"
-peano-flags := f"-O2 -std=c++20 --target=aie2p-none-unknown-elf -DNDEBUG {{warning-flags}}"
+project := "peak_tops"
+import "../common.just"
+
 trace-size := "131072"
 trace-compute-tiles := "16"
 compute-tiles := "32"
 trace-compute-per-column := "2"
 compute-per-column := "4"
 trace-iterations := "1024"
-iterations := "8388608"
+iterations := "4194304"
 
 # list just recipes
 default:
@@ -15,54 +15,22 @@ default:
 
 # run without tracing
 run: xclbin
-    python3 run.py -x build/peak_tops.xclbin -i build/peak_tops_insts.bin -k MLIR_AIE \
+    python3 run.py --xclbin build/{{project}}.xclbin --instr build/{{project}}_insts.bin -k MLIR_AIE \
         --compute-tiles {{compute-tiles}} --iterations {{iterations}}
 
 # run with tracing and process trace
 trace: (xclbin trace-size trace-compute-tiles trace-compute-per-column trace-iterations)
     rm -f build/trace.txt
-    python3 run.py -x build/peak_tops.xclbin -i build/peak_tops_insts.bin -k MLIR_AIE \
+    python3 run.py --xclbin build/{{project}}.xclbin --instr build/{{project}}_insts.bin -k MLIR_AIE \
         --compute-tiles {{trace-compute-tiles}} --iterations {{trace-iterations}} \
         -t {{trace-size}} --trace-file build/trace.txt
-    python3 {{mlir-aie-dir}}/python/aie/utils/trace/parse.py --input build/trace.txt \
-        --mlir build/peak_tops.mlir.prj/input_with_addresses.mlir --output peak_tops_trace.json
-    python3 {{mlir-aie-dir}}/python/aie/utils/trace/get_trace_summary.py --input peak_tops_trace.json
-
-# show compute tile assembly
-show-asm: xclbin
-    ${PEANO_INSTALL_DIR}/bin/llvm-objdump -C -z -d build/peak_tops.mlir.prj/main_core_0_2.elf
-
-# build C++ kernel
-kernel: _build_dir
-    ${PEANO_INSTALL_DIR}/bin/clang++ {{peano-flags}} -I {{mlir-aie-dir}}/include \
-        -c peak_tops.cc -o build/peak_tops.o
+    just _process_trace
 
 # generate MLIR
 mlir trace="0" compute-tiles=compute-tiles compute-per-column=compute-per-column iterations=iterations: _build_dir
-    python3 peak_tops.py \
+    python3 {{project}}.py \
         --trace-size {{trace}} --compute-tiles {{compute-tiles}} \
-        --compute-per-column {{compute-per-column}} --iterations {{iterations}} > build/peak_tops.mlir
+        --compute-per-column {{compute-per-column}} --iterations {{iterations}} > build/{{project}}.mlir
 
 # build .xclbin
-xclbin trace="0" compute-tiles=compute-tiles compute-per-column=compute-per-column iterations=iterations: (mlir trace compute-tiles compute-per-column iterations) kernel
-    aiecc --tmpdir build/peak_tops.mlir.prj \
-        --aie-generate-xclbin --aie-generate-npu-insts \
-        --no-xchesscc --no-xbridge \
-        --xclbin-name=build/peak_tops.xclbin --npu-insts-name=build/peak_tops_insts.bin \
-        build/peak_tops.o build/peak_tops.mlir
-
-_build_dir:
-    mkdir -p build
-
-# lint the code
-lint:
-    uvx ruff check
-
-# format the code
-format:
-    find . -iname '*.h' -o -iname '*.cpp' -o -iname '*.cc' -o -iname '*.c' | xargs clang-format -i
-    uvx ruff format
-
-# clean build outputs
-clean:
-    rm -rf build
+xclbin trace="0" compute-tiles=compute-tiles compute-per-column=compute-per-column iterations=iterations: (mlir trace compute-tiles compute-per-column iterations) kernel _aiecc

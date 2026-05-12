@@ -1,2 +1,5 @@
 *~
 *.prj
+/*/build
+/*/*_trace.json
+__pycache__
