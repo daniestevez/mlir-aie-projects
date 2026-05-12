@@ -3,7 +3,7 @@
 # This project demonstrates the advertised peak TOPS performance on AIE-ML
 # engines.
 #
-# Copyright 2016 Daniel Estevez <daniel@destevez.net>
+# Copyright 2026 Daniel Estevez <daniel@destevez.net>
 # SPDX-License-Identifier: MIT OR Apache-2.0
 
 import argparse
