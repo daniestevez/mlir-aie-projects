@@ -72,10 +72,24 @@ class Dimensions:
         self.N_PFB = 9
         self.num_sample_blocks = 4
 
-        self.integrations = 1024
+        # This choice guarantees that there are no accumulator overflows
+        # regardless of the input values, as checked by the assert
+        # below. However it is low enough that there is some throughput loss
+        # because of overhead in zeroing the accumulators. If it is known that
+        # the input has some distribution (for instance a Gaussian with a given
+        # sigma), then it is possible to work out how many integrations
+        # guarantee that the probability of overflow is as small as desired. By
+        # increasing the number of integrations to that value, throughput will
+        # be increased somewhat.
+        self.integrations = 68
 
         assert self.N * self.array_rows == self.M * self.array_cols
         assert self.items_per_packet() <= 8800
+        max_integrations_without_overflow = 2**15
+        assert (
+            self.samples_per_packet() * self.integrations
+            <= max_integrations_without_overflow
+        )
 
     def a_length(self):
         return self.N * self.T * 2 * self.vmac_size()

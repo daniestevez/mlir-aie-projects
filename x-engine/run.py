@@ -42,7 +42,7 @@ def main(args):
         DefaultNPURuntime.process_trace(trace_buffer, ctrl_buffer, trace_config)
     else:
         npu_times = []
-        num_runs = 100
+        num_runs = 1024
         for _ in range(num_runs):
             res = DefaultNPURuntime.run(kernel_handle, buffers)
             npu_times.append(res.npu_time * 1e-9)

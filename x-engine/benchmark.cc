@@ -21,7 +21,7 @@
 
 class BufferRing {
 public:
-  static constexpr uint32_t ring_size = 2; // this needs to be a power of 2
+  static constexpr uint32_t ring_size = 4; // this needs to be a power of 2
   std::array<xrt::bo, ring_size> a;
   std::array<xrt::bo, ring_size> b;
   std::atomic<std::uint32_t> available;
@@ -107,7 +107,7 @@ int main(int argc, const char *argv[]) {
   test_utils::init_xrt_load_kernel(device, kernel, verbosity,
                                    "build/x_engine.xclbin", "MLIR_AIE");
 
-  constexpr size_t input_length = 2264924160;
+  constexpr size_t input_length = 150405120;
   constexpr size_t all_acc_length = 1179648;
   auto bo_instr = xrt::bo(device, instr_v.size() * sizeof(uint32_t),
                           XCL_BO_FLAGS_CACHEABLE, kernel.group_id(1));
@@ -139,7 +139,10 @@ int main(int argc, const char *argv[]) {
         std::chrono::duration<double>(t_now - t_measure).count();
     if (delta > measurement_delta) {
       const double calls_per_second = static_cast<double>(kernel_calls) / delta;
-      constexpr uint64_t samples_per_call = 4423680;
+      // This is calculated as
+      // dimensions.samples_per_packet() * dimensions.integrations *
+      // dimensions.N_PFB
+      constexpr uint64_t samples_per_call = 293760;
       const double samples_per_second =
           static_cast<double>(samples_per_call) * calls_per_second;
       constexpr uint64_t num_streams = 256;

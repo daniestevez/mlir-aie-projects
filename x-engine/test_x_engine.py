@@ -38,6 +38,8 @@ class TestXEngine:
             self.kernel_handle = DefaultNPURuntime.load(npu_kernel)
         buffers = [self.a_buffer, self.b_buffer, self.acc_buffer]
         DefaultNPURuntime.run(self.kernel_handle, buffers)
+        # ensure that we have a coherent view of the output from the CPU
+        self.acc_buffer.to("cpu")
 
     def cleanup(self):
         del self.a_buffer
@@ -72,12 +74,7 @@ class TestXEngine:
         self.a_buffer.data.reshape(-1, self.dimensions.simd_size())[::2] = 1
         self.b_buffer[:] = self.a_buffer
         self.run_kernel()
-        n_accs = (
-            self.dimensions.T
-            * self.dimensions.simd_size()
-            * self.dimensions.integrations
-            * self.dimensions.num_sample_blocks
-        )
+        n_accs = self.dimensions.samples_per_packet() * self.dimensions.integrations
         acc_re = self.acc_buffer.data.reshape(-1, self.dimensions.vmac_size())[::2]
         acc_im = self.acc_buffer.data.reshape(-1, self.dimensions.vmac_size())[1::2]
         assert np.all(acc_re == np.int32(n_accs))
