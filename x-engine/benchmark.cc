@@ -149,7 +149,7 @@ int main(int argc, const char *argv[]) {
       constexpr uint64_t macs_per_call =
           4 * num_streams * num_streams * samples_per_call;
       const double tops =
-          static_cast<double>(macs_per_call) * calls_per_second * 1e-12;
+          static_cast<double>(2 * macs_per_call) * calls_per_second * 1e-12;
       std::println("{:.3f} Msps, {:.3f} TOPS, {:.3f} kernel calls/s",
                    samples_per_second * 1e-6, tops, calls_per_second);
       kernel_calls = 0;

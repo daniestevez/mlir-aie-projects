@@ -59,7 +59,7 @@ def main(args):
         print(f"throughput: {throughput * 1e-6:.3f} Msps")
         # the factor 4 is due to complex multiplication
         macs = 4 * dimensions.num_streams() ** 2 * num_samples
-        tops = macs / npu_time * 1e-12
+        tops = 2 * macs / npu_time * 1e-12
         print(f"TOPS: {tops:.3f}")
 
 
