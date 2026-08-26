@@ -19,10 +19,10 @@ class TestXEngine:
     def make_buffers(self):
         self.dimensions = Dimensions()
         self.a_buffer = iron.randint(
-            low=-128, high=127, size=self.dimensions.input_length(), dtype=np.int8
+            low=-128, high=128, size=self.dimensions.input_length(), dtype=np.int8
         )
         self.b_buffer = iron.randint(
-            low=-128, high=127, size=self.dimensions.input_length(), dtype=np.int8
+            low=-128, high=128, size=self.dimensions.input_length(), dtype=np.int8
         )
         self.acc_buffer = iron.randint(
             low=-(2**31),

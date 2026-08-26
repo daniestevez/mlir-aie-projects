@@ -19,11 +19,12 @@ from x_engine import Dimensions
 
 def main(args):
     dimensions = Dimensions()
+    # the high parameter in iron.randint() is exclusive
     a_buffer = iron.randint(
-        low=-128, high=127, size=dimensions.input_length(), dtype=np.int8
+        low=-128, high=128, size=dimensions.input_length(), dtype=np.int8
     )
     b_buffer = iron.randint(
-        low=-128, high=127, size=dimensions.input_length(), dtype=np.int8
+        low=-128, high=128, size=dimensions.input_length(), dtype=np.int8
     )
     acc_buffer = iron.zeros(dimensions.all_acc_length(), dtype=np.int32)
     if args.trace_size:

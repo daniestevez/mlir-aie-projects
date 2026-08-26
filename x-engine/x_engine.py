@@ -190,7 +190,7 @@ def x_engine(trace_size):
             lock(
                 a_mem_tile(n),
                 init=1,
-                sym_name=f"mem_a1_cons_prod_lock_row{n}",
+                sym_name=f"mem_a10_cons_prod_lock_row{n}",
             )
             for n in range(num_rows)
         ]
@@ -559,7 +559,7 @@ def x_engine(trace_size):
                     )
                     # dummy BD
                     dma_bd(
-                        mem_a_buff_0[row],
+                        mem_a_buff_1[row],
                         offset=0,
                         len=0,
                     )
@@ -629,7 +629,7 @@ def x_engine(trace_size):
                     )
                     # dummy BD
                     dma_bd(
-                        mem_a_buff_0[row],
+                        mem_a_buff_1[row],
                         offset=0,
                         len=0,
                     )
@@ -1234,7 +1234,7 @@ def x_engine(trace_size):
                     acc,
                     offset=n * dimensions.col_acc_length(),
                     # The last 2 dimensions are not linearized because the
-                    # maximum size0 is 1023
+                    # maximum size of a dimension is 1023
                     sizes=[
                         1,
                         # make the run shorter if we are tracing
