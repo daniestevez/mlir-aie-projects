@@ -107,7 +107,7 @@ int main(int argc, const char *argv[]) {
   test_utils::init_xrt_load_kernel(device, kernel, verbosity,
                                    "build/x_engine.xclbin", "MLIR_AIE");
 
-  constexpr size_t input_length = 150405120;
+  constexpr size_t input_length = 300810240;
   constexpr size_t all_acc_length = 1179648;
   auto bo_instr = xrt::bo(device, instr_v.size() * sizeof(uint32_t),
                           XCL_BO_FLAGS_CACHEABLE, kernel.group_id(1));
@@ -142,7 +142,7 @@ int main(int argc, const char *argv[]) {
       // This is calculated as
       // dimensions.samples_per_packet() * dimensions.integrations *
       // dimensions.N_PFB
-      constexpr uint64_t samples_per_call = 293760;
+      constexpr uint64_t samples_per_call = 587520;
       const double samples_per_second =
           static_cast<double>(samples_per_call) * calls_per_second;
       constexpr uint64_t num_streams = 256;

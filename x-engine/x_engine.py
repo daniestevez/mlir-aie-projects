@@ -81,11 +81,11 @@ class Dimensions:
         # guarantee that the probability of overflow is as small as desired. By
         # increasing the number of integrations to that value, throughput will
         # be increased somewhat.
-        self.integrations = 68
+        self.integrations = 136
 
         assert self.N * self.array_rows == self.M * self.array_cols
         assert self.items_per_packet() <= 8800
-        max_integrations_without_overflow = 2**15
+        max_integrations_without_overflow = 2**16 - 1
         assert (
             self.samples_per_packet() * self.integrations
             <= max_integrations_without_overflow
